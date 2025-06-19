@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Photography Portfolio</title>
 
-  <!-- Google Font & Icons -->
+  <!-- Font, Lucide, EXIF -->
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
@@ -13,37 +13,37 @@
   <style>
     :root { --bg: white; --fg: black; --footer: gray; }
     body.dark { --bg: #242424; --fg: white; --footer: #bbb; }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    html,body { scroll-behavior:smooth; overflow-x:hidden; }
-    body.lightbox-open,
-    html.lightbox-open { overflow:hidden; height:100%; }
+    * { margin:0; padding:0; box-sizing:border-box }
+    html, body { scroll-behavior:smooth; overflow-x:hidden }
+    body.lightbox-open, html.lightbox-open { overflow:hidden; height:100% }
 
     body {
-      font-family:'Source Sans Pro',sans-serif;
+      font-family:'Source Sans Pro', sans-serif;
       background:var(--bg);
       color:var(--fg);
-      display:flex; flex-direction:column; align-items:center;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
       padding:2rem 1rem;
-      opacity:0; animation:smoke 2s ease forwards;
+      opacity:0;
+      animation:smoke 2s ease forwards;
       transition:background .3s, color .3s;
     }
     @keyframes smoke {
-      from { opacity:0; filter:blur(20px); transform:translateY(50px); }
-      to { opacity:1; filter:blur(0); transform:translateY(0); }
+      from {opacity:0; filter:blur(20px); transform:translateY(50px);}
+      to   {opacity:1; filter:blur(0); transform:translateY(0);}
     }
 
-    .header { font-size:1.5rem; margin-bottom:6rem; text-align:center; }
+    .header { font-size:1.5rem; margin-bottom:6rem; text-align:center }
     .toggle-button {
       position:fixed; top:20px; right:20px;
       background:none; border:none; cursor:pointer;
       font-size:1.5rem; color:var(--fg); z-index:999;
     }
-
     .gallery {
       column-count:3; column-gap:1rem;
       width:100%; max-width:1800px;
     }
-
     .gallery-item {
       break-inside:avoid; margin-bottom:1rem;
       opacity:0; transform:translateY(30px);
@@ -109,10 +109,12 @@
     }
 
     footer {
-      margin-top:7rem; font-size:.9rem;
-      color:var(--footer); text-align:center;
+      margin-top:7rem;
+      font-size:.9rem;
+      color:var(--footer);
+      text-align:center;
     }
-    @media(max-width:1000px){ .gallery{column-count:2;} }
+    @media(max-width:1000px){ .gallery{column-count:2} }
     @media(max-width:600px){
       .gallery{column-count:1;}
       .header{font-size:1.2rem;margin-bottom:4rem;}
@@ -120,9 +122,10 @@
     }
   </style>
 </head>
+
 <body onload="window.scrollTo(0,0)">
 
-  <button class="toggle-button" id="toggleDarkMode" aria-label="Toggle Dark Mode">
+  <button class="toggle-button" id="toggleDarkMode">
     <i data-lucide="moon"></i>
   </button>
 
@@ -136,232 +139,152 @@
     <div class="thumb-carousel" id="thumbCarousel"></div>
   </div>
 
-  <footer>The End 😊</footer>
+  <footer>Thank you :)</footer>
 
-<script>
-  lucide.createIcons();
-
-  // Dark Mode
-  const toggleBtn = document.getElementById("toggleDarkMode");
-  const icon = toggleBtn.querySelector("i");
-  toggleBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-    icon.dataset.lucide = document.body.classList.contains("dark") ? "sun" : "moon";
+  <script>
     lucide.createIcons();
-  });
-  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
-  // Masonry scroll reveal
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) e.target.classList.add("visible");
+    const toggleBtn = document.getElementById("toggleDarkMode");
+    const icon = toggleBtn.querySelector("i");
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      icon.dataset.lucide = document.body.classList.contains("dark") ? "sun" : "moon";
+      lucide.createIcons();
     });
-  }, { threshold: 0.1 });
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
-  const gallery = document.getElementById("gallery");
-  const lightbox = document.getElementById("lightbox");
-  const lightboxImage = document.getElementById("lightboxImage");
-  const metadata = document.getElementById("metadata");
-  const thumbCarousel = document.getElementById("thumbCarousel");
-  const closeBtn = document.getElementById("lightboxClose");
+    const gallery = document.getElementById("gallery");
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImage = document.getElementById("lightboxImage");
+    const metadata = document.getElementById("metadata");
+    const thumbCarousel = document.getElementById("thumbCarousel");
+    const closeBtn = document.getElementById("lightboxClose");
 
-  let imageUrls = [
-    // Paste your Flickr direct JPG URLs here, e.g.:
-    // "https://live.staticflickr.com/65535/54585944978_fb3dfc678a_b.jpg",
-    "https://live.staticflickr.com/65535/54585709591_ffa07fddff_n.jpg",
-"https://live.staticflickr.com/65535/54585944978_fb3dfc678a.jpg",
-"https://live.staticflickr.com/65535/54584860097_eb4e6f8602.jpg",
-"https://live.staticflickr.com/65535/54584860112_a7a9ea9217.jpg",
-"https://live.staticflickr.com/65535/54584839562_3aae9fcc95.jpg",
-"https://live.staticflickr.com/65535/54223810993_8965cafe3e.jpg",
-"https://live.staticflickr.com/65535/54223970305_36065380dc.jpg",
-"https://live.staticflickr.com/65535/54223811379_d1c428f2f1.jpg",
-"https://live.staticflickr.com/65535/54223970150_cacd87fece.jpg",
-"https://live.staticflickr.com/65535/54223810708_4c3df1f157_n.jpg",
-"https://live.staticflickr.com/65535/54223970010_4297af7680.jpg",
-"https://live.staticflickr.com/65535/54223969885_def0b6af3b.jpg",
-"https://live.staticflickr.com/65535/54212052890_2b8a4083e4_n.jpg",
-"https://live.staticflickr.com/65535/54211881348_20325966aa.jpg",
-"https://live.staticflickr.com/65535/54212052630_4d3332a082.jpg",
-"https://live.staticflickr.com/65535/54211649426_d03b392507_w.jpg",
-"https://live.staticflickr.com/65535/54212052315_0f5422deb2.jpg",
-"https://live.staticflickr.com/65535/54210749527_cc9607ac5f_w.jpg",
-"https://live.staticflickr.com/65535/54211891459_7ca4dd9239.jpg",
-"https://live.staticflickr.com/65535/54212051830_312d1cabb4.jpg",
-"https://live.staticflickr.com/65535/54211891039_a5f02f2a57.jpg",
-"https://live.staticflickr.com/65535/54212051520_8055200120_w.jpg",
-"https://live.staticflickr.com/65535/54205122940_5b95d6cafb_w.jpg",
-"https://live.staticflickr.com/65535/54205122800_551d39b434.jpg",
-"https://live.staticflickr.com/65535/54203803057_5de238da45.jpg",
-"https://live.staticflickr.com/65535/54205122550_d79b6135f5.jpg",
-"https://live.staticflickr.com/65535/54204697901_c8a2769b7e.jpg",
-"https://live.staticflickr.com/65535/54204942683_0d608cf9f0.jpg",
-"https://live.staticflickr.com/65535/54204697706_923d368d3a.jpg",
-"https://live.staticflickr.com/65535/54203802572_3907a388ae.jpg",
-"https://live.staticflickr.com/65535/54204942453_ab72f5220b.jpg",
-"https://live.staticflickr.com/65535/54204947894_afc32a2d70.jpg",
-"https://live.staticflickr.com/65535/54204697431_18b3a370c9.jpg",
-"https://live.staticflickr.com/65535/54203802242_df2fd32afe.jpg",
-"https://live.staticflickr.com/65535/54204697321_97927723db.jpg",
-"https://live.staticflickr.com/65535/54203802052_87cf908ab7.jpg",
-"https://live.staticflickr.com/65535/54204942008_0a579392d7.jpg",
-"https://live.staticflickr.com/65535/54205121500_00f3620e27.jpg",
-"https://live.staticflickr.com/65535/54204941803_8136611c34.jpg",
-"https://live.staticflickr.com/65535/54204941713_bf27d5c33c.jpg",
-"https://live.staticflickr.com/65535/54204696811_bac0025151.jpg",
-"https://live.staticflickr.com/65535/54204696741_62a842d08f.jpg",
-"https://live.staticflickr.com/65535/54205120965_1714408f57.jpg",
-"https://live.staticflickr.com/65535/54204946839_48ffe8d152_n.jpg",
-"https://live.staticflickr.com/65535/54204696381_519a220386.jpg",
-"https://live.staticflickr.com/65535/54203801167_8abfe6542c_w.jpg",
-"https://live.staticflickr.com/65535/54204941023_533f7a05f0_w.jpg",
-"https://live.staticflickr.com/65535/54204696091_73ba973b5a.jpg",
-"https://live.staticflickr.com/65535/54205120365_44ba636c63.jpg",
-"https://live.staticflickr.com/65535/54203800752_93ddbdd034.jpg",
-"https://live.staticflickr.com/65535/54203800692_615ea99569.jpg",
-"https://live.staticflickr.com/65535/54204695761_c5d3fd2779.jpg",
-"https://live.staticflickr.com/65535/54203800532_0404b35dac.jpg",
-"https://live.staticflickr.com/65535/54204695541_95864797ce_n.jpg",
-"https://live.staticflickr.com/65535/54204695481_03f6a1e879.jpg",
-"https://live.staticflickr.com/65535/54204695411_146d5b5512.jpg",
-"https://live.staticflickr.com/65535/54204940143_077c6b5d58.jpg",
-"https://live.staticflickr.com/65535/54204695231_113015219b.jpg",
-"https://live.staticflickr.com/65535/54204695146_e6ffe2d591.jpg",
-"https://live.staticflickr.com/65535/54204945589_1bd61a196b.jpg",
-"https://live.staticflickr.com/65535/54205119360_b253ddcaf8_n.jpg",
-"https://live.staticflickr.com/65535/54205119300_6d0711d519.jpg",
-"https://live.staticflickr.com/65535/54204694851_7ceac5363a.jpg",
-"https://live.staticflickr.com/65535/54204939663_ed11f0158a.jpg",
-"https://live.staticflickr.com/65535/54203799587_86df434e6a.jpg",
-"https://live.staticflickr.com/65535/54203799497_6dd258bf5b.jpg",
-"https://live.staticflickr.com/65535/54203752912_a58320dbf9.jpg",
-"https://live.staticflickr.com/65535/54205071650_510fba6d81.jpg",
-"https://live.staticflickr.com/65535/54204994925_7671ec1790.jpg",
-"https://live.staticflickr.com/65535/54204822939_4622f30ec0_n.jpg",
-"https://live.staticflickr.com/65535/54211930409_db4df4049b.jpg",
-"https://live.staticflickr.com/65535/54204822849_15365b78a2.jpg",
-"https://live.staticflickr.com/65535/54203677282_0a3ce04505.jpg",
-"https://live.staticflickr.com/65535/54204994635_e87421d7b8.jpg",
-"https://live.staticflickr.com/65535/54204817058_d9166b880a.jpg",
-"https://live.staticflickr.com/65535/54204510191_fb105d028a.jpg",
-"https://live.staticflickr.com/65535/54204994480_d23958005c_n.jpg",
-"https://live.staticflickr.com/65535/54211687946_fd319af136.jpg",
-"https://live.staticflickr.com/65535/54204932890_35d0e7a7b4.jpg",
-"https://live.staticflickr.com/65535/54204509976_8355bec902.jpg",
-"https://live.staticflickr.com/65535/54204760634_2558c190d3_n.jpg",
-"https://live.staticflickr.com/65535/54204755853_a1f7e41d24.jpg",
-"https://live.staticflickr.com/65535/54204760519_395f07492f.jpg",
-"https://live.staticflickr.com/65535/54203615837_e78cec24a8_n.jpg",
-"https://live.staticflickr.com/65535/54204509576_cf65301ae2.jpg",
-"https://live.staticflickr.com/65535/54203615637_1e12552b18.jpg",
-"https://live.staticflickr.com/65535/54204504876_7f8eb5c536_z.jpg",
-"https://live.staticflickr.com/65535/54212090395_32a206aa3b.jpg",
-"https://live.staticflickr.com/65535/54211919008_1ec87a1ab6.jpg",
-"https://live.staticflickr.com/65535/54204448336_1c68d31624_z.jpg",
-  ];
-  let currentIndex = 0, isZoomed = false;
+    let currentIndex = 0, isZoomed = false;
 
-  // Build gallery
-  imageUrls.forEach((url, i) => {
-    const div = document.createElement("div"); div.className = "gallery-item";
-    const img = document.createElement("img");
-    img.src = url; img.loading = "lazy"; img.alt = `Photo ${i + 1}`;
-    img.addEventListener("click", () => openLightbox(i));
-    div.appendChild(img); gallery.appendChild(div);
-    observer.observe(div);
-  });
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) e.target.classList.add("visible");
+      });
+    }, { threshold: 0.1 });
 
-  // Lightbox control
-  function openLightbox(i) {
-    currentIndex = i;
-    update();
-    document.body.classList.add("lightbox-open");
-    lightbox.classList.add("show");
-  }
-  function closeLightbox() {
-    document.body.classList.remove("lightbox-open");
-    lightbox.classList.remove("show");
-    lightboxImage.classList.remove("zoomed");
-    lightboxImage.style.transform = "none"; isZoomed = false;
-  }
-  closeBtn.addEventListener("click", closeLightbox);
-  lightbox.addEventListener("click", e => {
-    if (e.target === lightbox) closeLightbox();
-  });
-
-  function update() {
-    lightboxImage.src = imageUrls[currentIndex];
-    loadEXIF();
-    buildThumbs();
-  }
-
-  // Thumbnails
-  function buildThumbs() {
-    thumbCarousel.innerHTML = "";
-    const start = Math.max(0, currentIndex - 3);
-    const end = Math.min(imageUrls.length - 1, currentIndex + 3);
-    for (let i = start; i <= end; i++) {
-      const t = document.createElement("img");
-      t.src = imageUrls[i];
-      if (i === currentIndex) t.classList.add("current");
-      t.addEventListener("click", () => openLightbox(i));
-      thumbCarousel.appendChild(t);
+    function getImageUrls() {
+      return (localStorage.getItem('flickrUrls') || '')
+        .split('|')
+        .filter(u => u.startsWith('http'))
+        .map(u => u.replace(/_b\.jpg$/, '_o.jpg'));
     }
-  }
 
-  // EXIF
-  function loadEXIF() {
-    metadata.textContent = "";
-    EXIF.getData(lightboxImage, function() {
-      const parts = [];
-      const shutter = EXIF.getTag(this, "ExposureTime");
-      const aperture = EXIF.getTag(this, "FNumber");
-      const iso = EXIF.getTag(this, "ISOSpeedRatings");
-      if (shutter) parts.push(`Shutter: ${shutter}s`);
-      if (aperture) parts.push(`Aperture: ƒ/${aperture}`);
-      if (iso) parts.push(`ISO: ${iso}`);
-      metadata.textContent = parts.join(" • ");
-    });
-  }
+    function rebuildGallery() {
+      gallery.innerHTML = '';
+      const urls = getImageUrls();
+      urls.forEach((url, i) => {
+        const div = document.createElement("div");
+        div.className = "gallery-item";
+        const img = document.createElement("img");
+        img.src = url;
+        img.loading = "lazy";
+        img.alt = `Photo ${i+1}`;
+        img.addEventListener("click", () => openLightbox(i));
+        div.appendChild(img);
+        gallery.appendChild(div);
+        observer.observe(div);
+      });
+    }
 
-  // Navigation: arrows & swipe
-  document.addEventListener("keydown", e => {
-    if (!lightbox.classList.contains("show")) return;
-    if (e.key === "ArrowRight" && currentIndex < imageUrls.length - 1) currentIndex++, update();
-    if (e.key === "ArrowLeft" && currentIndex > 0) currentIndex--, update();
-    if (e.key === "Escape") closeLightbox();
-  });
-  let startX;
-  lightbox.addEventListener("touchstart", e => startX = e.touches[0].clientX);
-  lightbox.addEventListener("touchend", e => {
-    const dx = e.changedTouches[0].clientX - startX;
-    if (dx > 50 && currentIndex > 0) currentIndex--, update();
-    if (dx < -50 && currentIndex < imageUrls.length - 1) currentIndex++, update();
-  });
+    function openLightbox(i) {
+      currentIndex = i;
+      updateLightbox();
+      document.body.classList.add("lightbox-open");
+      lightbox.classList.add("show");
+    }
 
-  // Zoom & pan
-  lightboxImage.addEventListener("click", e => {
-    if (!isZoomed) {
-      lightboxImage.classList.add("zoomed");
-      lightboxImage.style.transform = "scale(2)";
-      isZoomed = true;
-    } else {
+    function closeLightbox() {
+      lightbox.classList.remove("show");
+      document.body.classList.remove("lightbox-open");
       lightboxImage.classList.remove("zoomed");
       lightboxImage.style.transform = "none";
+      metadata.textContent = '';
       isZoomed = false;
     }
-  });
-  let dragging = false, sx, sy;
-  lightboxImage.addEventListener("mousedown", e => {
-    if (!isZoomed) return;
-    dragging = true; sx = e.clientX; sy = e.clientY;
-  });
-  window.addEventListener("mousemove", e => {
-    if (!dragging) return;
-    const dx = e.clientX - sx, dy = e.clientY - sy;
-    lightboxImage.style.transform = `scale(2) translate(${dx}px,${dy}px)`;
-  });
-  window.addEventListener("mouseup", () => { dragging = false; });
-</script>
+
+    function updateLightbox() {
+      const urls = getImageUrls();
+      lightboxImage.src = urls[currentIndex];
+      loadEXIF();
+      buildThumbs();
+    }
+
+    function buildThumbs() {
+      thumbCarousel.innerHTML = '';
+      const urls = getImageUrls();
+      const start = Math.max(0, currentIndex - 3);
+      const end = Math.min(urls.length - 1, currentIndex + 3);
+      for (let i = start; i <= end; i++) {
+        const t = document.createElement('img');
+        t.src = urls[i];
+        if (i === currentIndex) t.classList.add('current');
+        t.addEventListener('click', () => openLightbox(i));
+        thumbCarousel.appendChild(t);
+      }
+    }
+
+    function loadEXIF() {
+      metadata.textContent = '';
+      EXIF.getData(lightboxImage, function() {
+        const parts = [];
+        const shutter = EXIF.getTag(this, "ExposureTime");
+        const aperture = EXIF.getTag(this, "FNumber");
+        const iso = EXIF.getTag(this, "ISOSpeedRatings");
+        if (shutter) parts.push(`Shutter: ${shutter}s`);
+        if (aperture) parts.push(`Aperture: ƒ/${aperture}`);
+        if (iso) parts.push(`ISO: ${iso}`);
+        metadata.textContent = parts.join(' • ');
+      });
+    }
+
+    document.addEventListener("keydown", e => {
+      if (!lightbox.classList.contains("show")) return;
+      const urls = getImageUrls();
+      if (e.key === "ArrowRight" && currentIndex < urls.length -1) currentIndex++, updateLightbox();
+      if (e.key === "ArrowLeft"  && currentIndex > 0) currentIndex--, updateLightbox();
+      if (e.key === "Escape") closeLightbox();
+    });
+
+    let startX;
+    lightbox.addEventListener("touchstart", e => startX = e.touches[0].clientX);
+    lightbox.addEventListener("touchend", e => {
+      const dx = e.changedTouches[0].clientX - startX;
+      const urls = getImageUrls();
+      if (dx > 50 && currentIndex > 0) currentIndex--, updateLightbox();
+      if (dx < -50 && currentIndex < urls.length -1) currentIndex++, updateLightbox();
+    });
+
+    lightboxImage.addEventListener("click", e => {
+      isZoomed = !isZoomed;
+      lightboxImage.classList.toggle("zoomed", isZoomed);
+      lightboxImage.style.transform = isZoomed ? "scale(2)" : "none";
+    });
+
+    let dragging=false, sx, sy;
+    lightboxImage.addEventListener("mousedown", e => {
+      if (!isZoomed) return;
+      dragging=true;
+      sx = e.clientX; sy = e.clientY;
+      e.preventDefault();
+    });
+    window.addEventListener("mousemove", e => {
+      if (!dragging) return;
+      const dx = e.clientX - sx, dy = e.clientY - sy;
+      lightboxImage.style.transform = `scale(2) translate(${dx}px,${dy}px)`;
+    });
+    window.addEventListener("mouseup", () => dragging = false);
+
+    rebuildGallery();
+
+    window.addEventListener('message', ev => {
+      if (ev.data?.type === 'flickr-update') rebuildGallery();
+    });
+  </script>
 </body>
 </html>
